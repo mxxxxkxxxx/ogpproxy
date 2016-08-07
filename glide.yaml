@@ -1,0 +1,4 @@
+package: .
+import:
+  - package: golang.org/x/net/html
+  - package: github.com/syndtr/goleveldb/leveldb
