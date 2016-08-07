@@ -11,7 +11,7 @@ This is a proxy to cache OGP (Open Graph Protocol) Data.
 git clone git@github.com:mxxxxkxxxx/ogpproxy.git
 cd ogpproxy
 glide install
-go buld ogpp
+go build ogpp
 
 # launch
 ./ogpp
