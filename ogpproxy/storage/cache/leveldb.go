@@ -25,7 +25,7 @@ func (h *LevelDBHandler) Write(data *ogpproxy.OgpData) error {
 
 	err = db.Put([]byte(data.Url), buf, nil)
 	if err != nil {
-		return fmt.Errorf("Failed to writer data to leveldb: erro=[%s]", err)
+		return fmt.Errorf("Failed to write data to leveldb: err=[%s]", err)
 	}
 
 	return nil

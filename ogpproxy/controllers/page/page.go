@@ -96,7 +96,13 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		}
 
 		res.Ogp = extractOgpData(doc)
-		go cacheHandler.Write(res.Ogp)
+		go func() {
+			fmt.Printf("Trying to write cache... : url=[%s]\n", url)
+			err = cacheHandler.Write(res.Ogp)
+			if err != nil {
+				fmt.Printf("Failed to write cache: url=[%s], err=[%s]\n", url, err)
+			}
+		}()
 	}
 
 	res.Write()
