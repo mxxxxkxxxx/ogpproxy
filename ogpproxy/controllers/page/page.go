@@ -8,7 +8,7 @@ import (
 	"ogpproxy/ogpproxy/storage/cache"
 )
 
-func extractOgpData(root *html.Node) *ogpproxy.OgpData {
+func extractOgpData(root *html.Node, url string) *ogpproxy.OgpData {
 	ogp := &ogpproxy.OgpData{}
 
 	var f func(n *html.Node)
@@ -51,6 +51,9 @@ func extractOgpData(root *html.Node) *ogpproxy.OgpData {
 	}
 
 	f(root)
+	if (len(ogp.Url) == 0) {
+		ogp.Url = url
+	}
 
 	return ogp
 }
@@ -95,7 +98,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		res.Ogp = extractOgpData(doc)
+		res.Ogp = extractOgpData(doc, url)
 		go func() {
 			fmt.Printf("Trying to write cache... : url=[%s]\n", url)
 			err = cacheHandler.Write(res.Ogp)
