@@ -2,9 +2,9 @@ package cache
 
 import (
 	"github.com/syndtr/goleveldb/leveldb"
-	"fmt"
 	"ogpproxy/ogpproxy/config"
 	"ogpproxy/ogpproxy/console"
+	"github.com/pkg/errors"
 )
 
 type LevelDBHandler struct {
@@ -14,15 +14,19 @@ type LevelDBHandler struct {
 func (h *LevelDBHandler) Write(key string, data []byte) error {
 	var err error
 
+	if len(key) == 0 {
+		return errors.New("Key is empty")
+	}
+
 	db, err := leveldb.OpenFile(h.Path, nil)
 	if err != nil {
-		return fmt.Errorf("Failed to open leveldb: err=[%s]", err)
+		return errors.Wrap(err, "Failed to open leveldb")
 	}
 	defer db.Close()
 
 	err = db.Put([]byte(key), data, nil)
 	if err != nil {
-		return fmt.Errorf("Failed to write data to leveldb: err=[%s]", err)
+		return errors.Wrap(err, "Failed to write data to leveldb")
 	}
 
 	console.Debug("Succeeded to write data to leveldb: key=[" + key + "]")
@@ -33,15 +37,19 @@ func (h *LevelDBHandler) Write(key string, data []byte) error {
 func (h *LevelDBHandler) Read(key string) ([]byte, error) {
 	var err error
 
+	if len(key) == 0 {
+		return nil, errors.New("Key is empty")
+	}
+
 	db, err := leveldb.OpenFile(h.Path, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to open leveldb: err=[%s]", err)
+		return nil, errors.Wrap(err, "Failed to open leveldb")
 	}
 	defer db.Close()
 
 	buf, err := db.Get([]byte(key), nil)
 	if err != nil || len(buf) == 0 {
-		return nil, fmt.Errorf("Failed to get data from leveldb: key=[%s], err=[%s]", key, err)
+		return nil, errors.Wrapf(err, "Failed to get data from leveldb: key=[%s]", key)
 	}
 
 	return buf, nil

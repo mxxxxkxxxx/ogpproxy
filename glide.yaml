@@ -4,3 +4,4 @@ import:
   - package: golang.org/x/text/transform
   - package: golang.org/x/text/encoding/japanese
   - package: github.com/syndtr/goleveldb/leveldb
+  - package: github.com/pkg/errors

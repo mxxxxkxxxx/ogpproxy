@@ -1,8 +1,10 @@
-hash: 2758ea0ea0d1fb3bce2d358b86bc22cb425f7a65e0db31681408eca1f1a9f9b7
-updated: 2016-08-10T13:24:40.099130963+09:00
+hash: a3afcc38fb376c197d4b0ee9f52ce5674abf5df9d7bdfc74e9771ff1b93638ec
+updated: 2016-08-10T15:15:54.319673943+09:00
 imports:
 - name: github.com/golang/snappy
   version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
+- name: github.com/pkg/errors
+  version: a22138067af1c4942683050411a841ade67fe1eb
 - name: github.com/syndtr/goleveldb
   version: ab8b5dcf1042e818ab68e770d465112a899b668e
   subpackages:
@@ -28,4 +30,7 @@ imports:
   subpackages:
   - transform
   - encoding/japanese
+  - encoding
+  - encoding/internal
+  - encoding/internal/identifier
 devImports: []
