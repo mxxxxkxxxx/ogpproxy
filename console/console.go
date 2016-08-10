@@ -1,7 +1,7 @@
 package console
 
 import (
-	"../config"
+	"github.com/mxxxxkxxxx/ogpproxy/config"
 	"fmt"
 )
 

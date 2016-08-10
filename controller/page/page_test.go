@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"io/ioutil"
-	"../../controller"
+	"github.com/mxxxxkxxxx/ogpproxy/controller"
 	"encoding/json"
 )
 

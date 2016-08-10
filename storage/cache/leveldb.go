@@ -3,8 +3,8 @@ package cache
 import (
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/pkg/errors"
-	"../../config"
-	"../../console"
+	"github.com/mxxxxkxxxx/ogpproxy/config"
+	"github.com/mxxxxkxxxx/ogpproxy/console"
 )
 
 type LevelDBHandler struct {

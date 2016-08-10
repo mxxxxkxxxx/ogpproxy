@@ -4,7 +4,7 @@ import (
 	"golang.org/x/net/html"
 	"encoding/json"
 	"github.com/pkg/errors"
-	"../storage/cache"
+	"github.com/mxxxxkxxxx/ogpproxy/storage/cache"
 )
 
 type OgpData struct {
