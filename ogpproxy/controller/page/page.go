@@ -39,53 +39,11 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		console.Debug("Failed to read from cache: err=[" + err.Error() + "]")
 		console.Info("GET " + url + " from remote")
 
-		destRes, err := http.Get(url)
+
+		doc, err := getHtmlFromRemote(url)
 		if err != nil {
 			res.WriteError(fmt.Sprintf("Failed to do GET %s", url))
-			return
-		}
-		defer destRes.Body.Close()
-
-		console.Debug(fmt.Sprintf("response headers: %+v", destRes.Header))
-
-		charSet := ""
-		if v, ok := destRes.Header["Content-Type"]; ok {
-			cTypeVals := strings.Split(v[0], ";")
-			if len(cTypeVals) == 2 {
-				charSetVals := strings.Split(strings.TrimSpace(cTypeVals[1]), "=")
-				if len(charSetVals) == 2 {
-					charSet = charSetVals[1]
-				}
-			}
-		}
-		console.Debug("charset: " + charSet)
-
-		var reader io.Reader
-		decoderFound := false
-		if len(charSet) > 0 {
-			switch (strings.ToUpper(charSet)) {
-			case "EUC_JP":
-				fallthrough
-			case "EUC-JP":
-				reader       = transform.NewReader(destRes.Body, japanese.EUCJP.NewDecoder())
-				decoderFound = true
-			case "SHIFT_JIS":
-				fallthrough
-			case "SHIFT-JIS":
-				reader       = transform.NewReader(destRes.Body, japanese.ShiftJIS.NewDecoder())
-				decoderFound = true
-			}
-		}
-
-		var doc *html.Node;
-		if decoderFound {
-			doc, err = html.Parse(reader)
-		} else {
-			doc, err = html.Parse(destRes.Body)
-		}
-
-		if err != nil {
-			res.WriteError(fmt.Sprintf("Failed to parse %s", url))
+			console.Error("Failed to do GET: url=[" + url + "], err=[" + err.Error() + "]")
 			return
 		}
 
@@ -104,3 +62,50 @@ func Get(w http.ResponseWriter, r *http.Request) {
 	res.Write()
 }
 
+func getHtmlFromRemote(url string) (*html.Node, error) {
+	destRes, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer destRes.Body.Close()
+
+	console.Debug(fmt.Sprintf("response headers: %+v", destRes.Header))
+
+	charSet := ""
+	if v, ok := destRes.Header["Content-Type"]; ok {
+		cTypeVals := strings.Split(v[0], ";")
+		if len(cTypeVals) == 2 {
+			charSetVals := strings.Split(strings.TrimSpace(cTypeVals[1]), "=")
+			if len(charSetVals) == 2 {
+				charSet = charSetVals[1]
+			}
+		}
+	}
+	console.Debug("charset: " + charSet)
+
+	var reader io.Reader
+	decoderFound := false
+	if len(charSet) > 0 {
+		switch (strings.ToUpper(charSet)) {
+		case "EUC_JP":
+			fallthrough
+		case "EUC-JP":
+			reader = transform.NewReader(destRes.Body, japanese.EUCJP.NewDecoder())
+			decoderFound = true
+		case "SHIFT_JIS":
+			fallthrough
+		case "SHIFT-JIS":
+			reader = transform.NewReader(destRes.Body, japanese.ShiftJIS.NewDecoder())
+			decoderFound = true
+		}
+	}
+
+	var doc *html.Node;
+	if decoderFound {
+		doc, err = html.Parse(reader)
+	} else {
+		doc, err = html.Parse(destRes.Body)
+	}
+
+	return doc, err
+}
