@@ -26,6 +26,6 @@ ENV=production ./ogpp
 http://[YOUR HOST]/?url=[WEBSITE]/
 
 # ex.
-$ curl http://127.0.0.1:8080/?url=http://www.google.com/
-{"errors":null,"ogp":{"title":"","description":"g.co/fruit \ufffdŁA2016 Doodle \ufffdt\ufffd\ufffd\ufffd[\ufffdc\ufffdQ\ufffd[\ufffd\ufffd\ufffd\ufffd\ufffd`\ufffdF\ufffdb\ufffdN #GoogleDoodle","url":"","image":"http://www.google.com/logos/doodles/2016/2016-doodle-fruit-games-day-3-5741908677623808-thp.png","site_name":"","locale":""}}
+$ curl http://127.0.0.1:8080/?url=http://www.businessinsider.com/
+{"errors":null,"ogp":{"title":"Business Insider","type":"blog","url":"http://www.businessinsider.com/","image":"http://static5.businessinsider.com/assets/images/us/logos/og-image-logo-social.png","audio":"","description":"The latest news from Business Insider","determiner":"","locale":"","locale_alternate":"","site_name":"Business Insider","video":""}}
 ```
