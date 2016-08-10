@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"fmt"
-	"ogpproxy/ogpproxy/ogp"
-	"ogpproxy/ogpproxy/console"
+	"../ogp"
+	"../console"
 )
 
 type Response struct {

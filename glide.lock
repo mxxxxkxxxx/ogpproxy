@@ -1,5 +1,5 @@
 hash: a3afcc38fb376c197d4b0ee9f52ce5674abf5df9d7bdfc74e9771ff1b93638ec
-updated: 2016-08-10T15:15:54.319673943+09:00
+updated: 2016-08-10T21:12:29.302037324+09:00
 imports:
 - name: github.com/golang/snappy
   version: d9eb7a3d35ec988b8585d4a0068e462c27d28380

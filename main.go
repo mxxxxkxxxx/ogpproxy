@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 	"net/http"
-	"ogpproxy/ogpproxy/controller/page"
-	"ogpproxy/ogpproxy/config"
-	"ogpproxy/ogpproxy/console"
+	"./controller/page"
+	"./config"
+	"./console"
 )
 
 func main() {

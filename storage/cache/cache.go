@@ -2,7 +2,7 @@ package cache
 
 import (
 	"strings"
-	"ogpproxy/ogpproxy/config"
+	"../../config"
 )
 
 type Writer interface {
