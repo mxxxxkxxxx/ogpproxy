@@ -13,10 +13,10 @@ cd ogpproxy
 glide install
 go build -o ogpp
 
-# run as development
+# run as development (configure by config.development.json)
 ./ogpp
 
-# run as production
+# run as production (configure by config.production.json)
 ENV=production ./ogpp
 ```
 
