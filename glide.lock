@@ -1,5 +1,5 @@
-hash: 28e7227acf4e02bc2eed4898bfa26e4a5068f5cf7177beb682fb8a1dab2affcb
-updated: 2016-08-08T05:08:50.463874556+09:00
+hash: 2758ea0ea0d1fb3bce2d358b86bc22cb425f7a65e0db31681408eca1f1a9f9b7
+updated: 2016-08-10T13:24:40.099130963+09:00
 imports:
 - name: github.com/golang/snappy
   version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
@@ -23,4 +23,9 @@ imports:
   subpackages:
   - html
   - html/atom
+- name: golang.org/x/text
+  version: 2910a502d2bf9e43193af9d68ca516529614eed3
+  subpackages:
+  - transform
+  - encoding/japanese
 devImports: []

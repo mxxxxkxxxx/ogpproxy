@@ -8,6 +8,10 @@ import (
 	"ogpproxy/ogpproxy/storage/cache"
 	"ogpproxy/ogpproxy/ogp"
 	"ogpproxy/ogpproxy/console"
+	"strings"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/encoding/japanese"
+	"io"
 )
 
 func Get(w http.ResponseWriter, r *http.Request) {
@@ -32,6 +36,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 	if cache, err := cacheHandler.Read(url); err == nil {
 		console.Info("GET " + url + " from cache")
+		console.Debug(fmt.Sprintf("ogp(cached): %+v", cache))
 		res.Ogp = cache
 	} else {
 		console.Debug("Failed to read from cache: err=[" + err.Error() + "]")
@@ -44,13 +49,52 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		}
 		defer destRes.Body.Close()
 
-		doc, err := html.Parse(destRes.Body)
+		console.Debug(fmt.Sprintf("response headers: %+v", destRes.Header))
+
+		charSet := ""
+		if v, ok := destRes.Header["Content-Type"]; ok {
+			cTypeVals := strings.Split(v[0], ";")
+			if len(cTypeVals) == 2 {
+				charSetVals := strings.Split(strings.TrimSpace(cTypeVals[1]), "=")
+				if len(charSetVals) == 2 {
+					charSet = charSetVals[1]
+				}
+			}
+		}
+		console.Debug("charset: " + charSet)
+
+		var reader io.Reader
+		decoderFound := false
+		if len(charSet) > 0 {
+			switch (strings.ToUpper(charSet)) {
+			case "EUC_JP":
+				fallthrough
+			case "EUC-JP":
+				reader       = transform.NewReader(destRes.Body, japanese.EUCJP.NewDecoder())
+				decoderFound = true
+			case "SHIFT_JIS":
+				fallthrough
+			case "SHIFT-JIS":
+				reader       = transform.NewReader(destRes.Body, japanese.ShiftJIS.NewDecoder())
+				decoderFound = true
+			}
+		}
+
+		var doc *html.Node;
+		if decoderFound {
+			doc, err = html.Parse(reader)
+		} else {
+			doc, err = html.Parse(destRes.Body)
+		}
+
 		if err != nil {
 			res.WriteError(fmt.Sprintf("Failed to parse %s", url))
 			return
 		}
 
 		res.Ogp = ogp.CreateOgpData(doc, url)
+		console.Debug(fmt.Sprintf("ogp: %+v", res.Ogp))
+
 		go func() {
 			console.Debug("Trying to write cache... : url=[" + url + "]")
 			err = cacheHandler.Write(res.Ogp)
