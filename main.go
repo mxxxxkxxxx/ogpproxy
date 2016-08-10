@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"flag"
 	"os"
 	"net/http"
-	"ogpproxy/ogpproxy/controllers/page"
+	"ogpproxy/ogpproxy/controller/page"
+	"ogpproxy/ogpproxy/config"
+	"ogpproxy/ogpproxy/console"
 )
 
 func main() {
@@ -13,9 +14,8 @@ func main() {
 }
 
 func realMain() int {
-	var port int
-	flag.IntVar(&port, "port", 8080, "Port number to listen")
-	flag.Parse()
+	config := config.GetConfig()
+	console.Debug(fmt.Sprintf("config: %+v", config))
 
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
@@ -23,9 +23,9 @@ func realMain() int {
 	})
 	http.HandleFunc("/", page.Get)
 
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.Host, config.Port), nil)
 	if (err != nil) {
-		fmt.Printf("An error occured. err=[%s]", err)
+		console.Error("An error occured. err=[" + err.Error() + "]")
 		return 1
 	}
 

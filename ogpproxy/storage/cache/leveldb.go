@@ -1,18 +1,22 @@
 package cache
 
 import (
-	"ogpproxy/ogpproxy"
 	"github.com/syndtr/goleveldb/leveldb"
 	"encoding/json"
 	"fmt"
+	"ogpproxy/ogpproxy/ogp"
+	"ogpproxy/ogpproxy/config"
+	"ogpproxy/ogpproxy/console"
 )
 
-type LevelDBHandler struct {}
+type LevelDBHandler struct {
+	Path string
+}
 
-func (h *LevelDBHandler) Write(data *ogpproxy.OgpData) error {
+func (h *LevelDBHandler) Write(data *ogp.OgpData) error {
 	var err error
 
-	db, err := leveldb.OpenFile("cache.db", nil)
+	db, err := leveldb.OpenFile(h.Path, nil)
 	if err != nil {
 		return fmt.Errorf("Failed to open leveldb: err=[%s]", err)
 	}
@@ -23,21 +27,21 @@ func (h *LevelDBHandler) Write(data *ogpproxy.OgpData) error {
 		return fmt.Errorf("Failed to convert data to json: err=[%s]", err)
 	}
 
-	err = db.Put([]byte(data.Url), buf, nil)
+	err = db.Put([]byte(data.RequestedUrl), buf, nil)
 	if err != nil {
 		return fmt.Errorf("Failed to write data to leveldb: err=[%s]", err)
 	}
 
-	fmt.Printf("Succeeded to write data to leveldb: url=[%s]\n", data.Url)
+	console.Debug("Succeeded to write data to leveldb: url=[" + data.RequestedUrl + "]")
 
 	return nil
 }
 
-func (h *LevelDBHandler) Read(url string) (*ogpproxy.OgpData, error) {
+func (h *LevelDBHandler) Read(url string) (*ogp.OgpData, error) {
 	var err error
-	data := &ogpproxy.OgpData{}
+	data := &ogp.OgpData{}
 
-	db, err := leveldb.OpenFile("cache.db", nil)
+	db, err := leveldb.OpenFile(h.Path, nil)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to open leveldb: err=[%s]", err)
 	}
@@ -58,7 +62,7 @@ func (h *LevelDBHandler) Read(url string) (*ogpproxy.OgpData, error) {
 }
 
 func GetLevelDBHandler() *LevelDBHandler {
-	handler := &LevelDBHandler{}
+	handler := &LevelDBHandler{Path: config.GetConfig().LevelDB.Path}
 
 	return handler
 }

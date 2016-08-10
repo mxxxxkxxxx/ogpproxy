@@ -2,15 +2,16 @@ package cache
 
 import (
 	"strings"
-	"ogpproxy/ogpproxy"
+	"ogpproxy/ogpproxy/ogp"
+	"ogpproxy/ogpproxy/config"
 )
 
 type Writer interface {
-	Write(data *ogpproxy.OgpData) error
+	Write(data *ogp.OgpData) error
 }
 
 type Reader interface {
-	Read(url string) (*ogpproxy.OgpData, error)
+	Read(url string) (*ogp.OgpData, error)
 }
 
 type Handler interface {
@@ -19,18 +20,17 @@ type Handler interface {
 }
 
 func GetHandler() Handler {
-	// @TODO: from config
-	strategy := "LEVELDB"
 	var handler Handler
 
-	switch (strings.ToUpper(strategy)) {
+	config := config.GetConfig()
+	switch (strings.ToUpper(config.Cache)) {
 	case "LEVELDB":
 		handler = GetLevelDBHandler()
 	// @TODO:
 	// case "MEMCACHED":
 	// 	handler = GetMemcachedHandler()
 	default:
-		panic("invalid storage handling strategy: " + strategy)
+		panic("invalid storage handling strategy: " + config.Cache)
 	}
 
 	return handler

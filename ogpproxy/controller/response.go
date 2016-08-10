@@ -1,24 +1,17 @@
-package ogpproxy
+package controller
 
 import (
 	"encoding/json"
 	"net/http"
 	"fmt"
+	"ogpproxy/ogpproxy/ogp"
+	"ogpproxy/ogpproxy/console"
 )
-
-type OgpData struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Url         string `json:"url"`
-	Image       string `json:"image"`
-	SiteName    string `json:"site_name"`
-	Locale      string `json:"locale"`
-}
 
 type Response struct {
 	Writer http.ResponseWriter `json:"-"`
 	Errors []string            `json:"errors"`
-	Ogp    *OgpData             `json:"ogp"`
+	Ogp    *ogp.OgpData        `json:"ogp"`
 }
 
 func (res *Response) Write() {
@@ -27,7 +20,7 @@ func (res *Response) Write() {
 	if err == nil {
 		content = string(buf)
 	} else {
-		fmt.Printf("error: %s", err)
+		console.Error("Failed to write response: err=[" + err.Error() + "]")
 		content = "{errors: [\"An unexpected error occured.\"]}"
 	}
 
