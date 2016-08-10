@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"golang.org/x/net/html"
 	"ogpproxy/ogpproxy/controller"
-	"ogpproxy/ogpproxy/storage/cache"
 	"ogpproxy/ogpproxy/ogp"
 	"ogpproxy/ogpproxy/console"
 	"strings"
@@ -32,9 +31,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cacheHandler := cache.GetHandler()
-
-	if cache, err := cacheHandler.Read(url); err == nil {
+	if cache, err := ogp.LoadOgpData(url); err == nil {
 		console.Info("GET " + url + " from cache")
 		console.Debug(fmt.Sprintf("ogp(cached): %+v", cache))
 		res.Ogp = cache
@@ -97,7 +94,7 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 		go func() {
 			console.Debug("Trying to write cache... : url=[" + url + "]")
-			err = cacheHandler.Write(res.Ogp)
+			err = res.Ogp.Save()
 			if err != nil {
 				console.Error("Failed to write cache: url=[" + url + "], err=[" + err.Error() + "]")
 			}

@@ -2,16 +2,15 @@ package cache
 
 import (
 	"strings"
-	"ogpproxy/ogpproxy/ogp"
 	"ogpproxy/ogpproxy/config"
 )
 
 type Writer interface {
-	Write(data *ogp.OgpData) error
+	Write(key string, data []byte) error
 }
 
 type Reader interface {
-	Read(url string) (*ogp.OgpData, error)
+	Read(key string) ([]byte, error)
 }
 
 type Handler interface {

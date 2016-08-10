@@ -44,7 +44,7 @@ func GetConfig() *Config {
 			Env:     env,
 		}
 
-		fileName := "config/" + env + ".json"
+		fileName := "config." + env + ".json"
 		if data, err := ioutil.ReadFile(fileName); err == nil {
 			json.Unmarshal(data, &config)
 		}

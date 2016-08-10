@@ -2,6 +2,9 @@ package ogp
 
 import (
 	"golang.org/x/net/html"
+	"encoding/json"
+	"fmt"
+	"ogpproxy/ogpproxy/storage/cache"
 )
 
 type OgpData struct {
@@ -90,3 +93,35 @@ func CreateOgpData(root *html.Node, url string) *OgpData {
 	return ogp
 }
 
+func LoadOgpData(url string) (*OgpData, error) {
+	data := &OgpData{}
+
+	cacheHandler := cache.GetHandler()
+	buf, err := cacheHandler.Read(url)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to load ogp data: key=[%s], err=[%s]", url, err)
+	}
+
+	// @TODO: check expiration
+	err = json.Unmarshal(buf, data)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to convert ogp data from json: key=[%s], err=[%s]", url, err)
+	}
+
+	return data, nil
+}
+
+func (o *OgpData) Save() error {
+	buf, err := json.Marshal(o)
+	if err != nil {
+		return fmt.Errorf("Failed to convert ogp data to json: key=[%s], err=[%s]", o.RequestedUrl, err)
+	}
+
+	cacheHandler := cache.GetHandler()
+	err = cacheHandler.Write(o.RequestedUrl, buf)
+	if err != nil {
+		return fmt.Errorf("Failed to save ogp data: key=[%s], err=[%s]", o.RequestedUrl, err)
+	}
+
+	return nil
+}
