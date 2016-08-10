@@ -1,3 +1,5 @@
+![build status](https://circleci.com/gh/mxxxxkxxxx/ogpproxy.svg?style=shield&circle-token=b6b5d7d9a137072aa00cd4ff757b8da488ef5673)
+
 # OGP Proxy
 This is a proxy to cache OGP (Open Graph Protocol) Data.
 
