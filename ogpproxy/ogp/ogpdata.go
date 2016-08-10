@@ -16,7 +16,7 @@ type OgpData struct {
 	LocaleAlternate string `json:"locale_alternate"`
 	SiteName        string `json:"site_name"`
 	Video           string `json:"video"`
-	RequestedUrl    string
+	RequestedUrl    string `json:"-"`
 }
 
 func CreateOgpData(root *html.Node, url string) *OgpData {
