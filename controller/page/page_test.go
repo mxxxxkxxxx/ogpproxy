@@ -51,8 +51,8 @@ func TestGet_WithUrl_Valid(t *testing.T) {
 	json.Unmarshal(data, res)
 	if len(res.Errors) != 0 {
 		t.Fatalf("Error count must equal 0: actual=%+v", res.Errors)
-	} else if res.Ogp.Title != "Google" {
-		t.Fatalf("Title is not expected one: actual=%s", res.Ogp.Title)
+	} else if len(res.Ogp.Title) != 1 || res.Ogp.Title[0] != "Google" {
+		t.Fatalf("Title is not expected one: actual=%+v", res.Ogp.Title)
 	}
 }
 

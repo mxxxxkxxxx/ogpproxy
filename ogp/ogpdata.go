@@ -5,21 +5,44 @@ import (
 	"encoding/json"
 	"github.com/pkg/errors"
 	"github.com/mxxxxkxxxx/ogpproxy/storage/cache"
+	"strconv"
 )
 
 type OgpData struct {
-	Title           string `json:"title"`
-	Type            string `json:"type"`
-	Url             string `json:"url"`
-	Image           string `json:"image"`
-	Audio           string `json:"audio"`
-	Description     string `json:"description"`
-	Determiner      string `json:"determiner"`
-	Locale          string `json:"locale"`
-	LocaleAlternate string `json:"locale_alternate"`
-	SiteName        string `json:"site_name"`
-	Video           string `json:"video"`
-	RequestedUrl    string `json:"-"`
+	Title           []string       `json:"title"`
+	Type            []string       `json:"type"`
+	Url             []string       `json:"url"`
+	Image           []OgpImageData `json:"image"`
+	Video           []OgpVideoData `json:"video"`
+	Audio           []OgpAudioData `json:"audio"`
+	Description     []string       `json:"description"`
+	Determiner      []string       `json:"determiner"`
+	Locale          []string       `json:"locale"`
+	LocaleAlternate []string       `json:"locale_alternate"`
+	SiteName        []string       `json:"site_name"`
+	RequestedUrl    string         `json:"-"`
+}
+
+type OgpImageData struct {
+	Url       string `json:"url"`
+	SecureUrl string `json:"secure_url"`
+	Type      string `json:"type"`
+	Width     int    `json:"width"`
+	Height    int    `json:"height"`
+}
+
+type OgpVideoData struct {
+	Url       string `json:"url"`
+	SecureUrl string `json:"secure_url"`
+	Type      string `json:"type"`
+	Width     int    `json:"width"`
+	Height    int    `json:"height"`
+}
+
+type OgpAudioData struct {
+	Url       string `json:"url"`
+	SecureUrl string `json:"secure_url"`
+	Type      string `json:"type"`
 }
 
 func CreateOgpData(root *html.Node, url string) *OgpData {
@@ -43,37 +66,10 @@ func CreateOgpData(root *html.Node, url string) *OgpData {
 					return
 				}
 
-				switch prop {
-				case "og:title":
-					ogp.Title = cont
-				case "og:type":
-					ogp.Type = cont
-				case "og:url":
-					ogp.Url = cont
-				case "og:image":
-					ogp.Image = cont
-				case "og:audio":
-					ogp.Audio = cont
-				case "og:description":
-					ogp.Description = cont
-				case "og:determiner":
-					ogp.Determiner = cont
-				case "og:locale":
-					ogp.Locale = cont
-				case "og:locale:alternate":
-					ogp.LocaleAlternate = cont
-				case "og:site_name":
-					ogp.SiteName = cont
-				case "og:video":
-					ogp.Video = cont
-				case "description":
-					if len(ogp.Description) == 0 {
-						ogp.Description = cont
-					}
-				}
+				ogp.Set(prop, cont)
 			} else if n.Data == "title" {
 				if len(ogp.Title) == 0 {
-					ogp.Title = n.FirstChild.Data
+					ogp.Title = append(ogp.Title, n.FirstChild.Data)
 				}
 			}
 
@@ -86,7 +82,7 @@ func CreateOgpData(root *html.Node, url string) *OgpData {
 
 	f(root)
 	if (len(ogp.Url) == 0) {
-		ogp.Url = url
+		ogp.Url = append(ogp.Url, url)
 	}
 	ogp.RequestedUrl = url
 
@@ -124,4 +120,134 @@ func (o *OgpData) Save() error {
 	}
 
 	return nil
+}
+
+func (o *OgpData) Set(prop string, content string) {
+	switch prop {
+	case "og:title":
+		o.Title = append(o.Title, content)
+	case "og:type":
+		o.Type = append(o.Type, content)
+	case "og:url":
+		o.Url = append(o.Url, content)
+	case "og:image":
+		fallthrough
+	case "og:image:url":
+		l := len(o.Image)
+		if l > 0 && len(o.Image[l - 1].Url) == 0 {
+			o.Image[l - 1].Url = content
+		} else {
+			o.Image = append(o.Image, OgpImageData{Url: content})
+		}
+	case "og:image:secure_url":
+		l := len(o.Image)
+		if l == 0 {
+			o.Image = append(o.Image, OgpImageData{})
+			l += 1
+		}
+		o.Image[l - 1].SecureUrl = content
+	case "og:image:type":
+		l := len(o.Image)
+		if l == 0 {
+			o.Image = append(o.Image, OgpImageData{})
+			l += 1
+		}
+		o.Image[l - 1].Type = content
+	case "og:image:width":
+		l := len(o.Image)
+		if l == 0 {
+			o.Image = append(o.Image, OgpImageData{})
+			l += 1
+		}
+		if num, err := strconv.Atoi(content); err != nil {
+			o.Image[l - 1].Width = num
+		}
+	case "og:image:height":
+		l := len(o.Image)
+		if l == 0 {
+			o.Image = append(o.Image, OgpImageData{})
+			l += 1
+		}
+		if num, err := strconv.Atoi(content); err != nil {
+			o.Image[l - 1].Height = num
+		}
+	case "og:video":
+		fallthrough
+	case "og:video:url":
+		l := len(o.Video)
+		if l > 0 && len(o.Video[l - 1].Url) == 0 {
+			o.Video[l - 1].Url = content
+		} else {
+			o.Video = append(o.Video, OgpVideoData{Url: content})
+		}
+	case "og:video:secure_url":
+		l := len(o.Video)
+		if l == 0 {
+			o.Video = append(o.Video, OgpVideoData{})
+			l += 1
+		}
+		o.Video[l - 1].SecureUrl = content
+	case "og:video:type":
+		l := len(o.Video)
+		if l == 0 {
+			o.Video = append(o.Video, OgpVideoData{})
+			l += 1
+		}
+		o.Video[l - 1].Type = content
+	case "og:video:width":
+		l := len(o.Video)
+		if l == 0 {
+			o.Video = append(o.Video, OgpVideoData{})
+			l += 1
+		}
+		if num, err := strconv.Atoi(content); err != nil {
+			o.Video[l - 1].Width = num
+		}
+	case "og:video:height":
+		l := len(o.Video)
+		if l == 0 {
+			o.Video = append(o.Video, OgpVideoData{})
+			l += 1
+		}
+		if num, err := strconv.Atoi(content); err != nil {
+			o.Video[l - 1].Height = num
+		}
+	case "og:audio":
+		fallthrough
+	case "og:audio:url":
+		l := len(o.Audio)
+		if l > 0 && len(o.Video[l - 1].Url) == 0 {
+			o.Audio[l - 1].Url = content
+		} else {
+			o.Audio = append(o.Audio, OgpAudioData{Url: content})
+		}
+	case "og:audio:secure_url":
+		l := len(o.Audio)
+		if l == 0 {
+			o.Audio = append(o.Audio, OgpAudioData{})
+			l += 1
+		}
+		o.Audio[l - 1].SecureUrl = content
+	case "og:audio:type":
+		l := len(o.Audio)
+		if l == 0 {
+			o.Audio = append(o.Audio, OgpAudioData{})
+			l += 1
+		}
+		o.Audio[l - 1].Type = content
+	case "og:description":
+		o.Description = append(o.Description, content)
+	case "og:determiner":
+		o.Determiner = append(o.Determiner, content)
+	case "og:locale":
+		o.Locale = append(o.Locale, content)
+	case "og:locale:alternate":
+		o.LocaleAlternate = append(o.LocaleAlternate, content)
+	case "og:site_name":
+		o.SiteName = append(o.SiteName, content)
+	case "description":
+		if len(o.Description) == 0 {
+			o.Description = append(o.Description, content)
+		}
+	}
 }
