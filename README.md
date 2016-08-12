@@ -26,8 +26,122 @@ ENV=production ./ogpp
 
 ```
 http://[YOUR HOST]/?url=[WEBSITE]/
+```
 
-# ex.
-$ curl http://127.0.0.1:8080/?url=http://www.businessinsider.com/
-{"errors":null,"ogp":{"title":"Business Insider","type":"blog","url":"http://www.businessinsider.com/","image":"http://static5.businessinsider.com/assets/images/us/logos/og-image-logo-social.png","audio":"","description":"The latest news from Business Insider","determiner":"","locale":"","locale_alternate":"","site_name":"Business Insider","video":""}}
+```
+# ex1
+$ curl http://localhost:8080/?url=https://mxxxxkxxxx.github.io/ogpproxy/samples/01.html
+{  
+   "errors":null,
+   "ogp":{  
+      "title":[  
+         "ogp proxy sample website"
+      ],
+      "type":[  
+         "website"
+      ],
+      "url":[  
+         "http://mxxxxkxxxx.github.io/ogpproxy/samples/01.html"
+      ],
+      "image":[  
+         {  
+            "url":"http://mxxxxkxxxx.github.io/ogpproxy/samples/images/01.jpg",
+            "secure_url":"",
+            "type":"",
+            "width":0,
+            "height":0
+         }
+      ],
+      "video":[  
+         {  
+            "url":"http://mxxxxkxxxx.github.io/ogpproxy/samples/videos/01.mp4",
+            "secure_url":"",
+            "type":"",
+            "width":0,
+            "height":0
+         }
+      ],
+      "audio":[  
+         {  
+            "url":"http://mxxxxkxxxx.github.io/ogpproxy/samples/sounds/01.mp3",
+            "secure_url":"",
+            "type":""
+         }
+      ],
+      "description":[  
+         "This is a sample website for ogpproxy."
+      ],
+      "determiner":[  
+         "auto"
+      ],
+      "locale":[  
+         {  
+            "locale":"en_US",
+            "alternate":""
+         }
+      ],
+      "site_name":[  
+         "ogpproxy sample 01"
+      ]
+   }
+}
+```
+
+```
+# ex2
+$ curl http://localhost:8080/?url=https://mxxxxkxxxx.github.io/ogpproxy/samples/02.html
+{  
+   "errors":null,
+   "ogp":{  
+      "title":[  
+         "ogp proxy sample website"
+      ],
+      "type":[  
+         "website"
+      ],
+      "url":[  
+         "http://mxxxxkxxxx.github.io/ogpproxy/samples/01.html"
+      ],
+      "image":[  
+         {  
+            "url":"http://mxxxxkxxxx.github.io/ogpproxy/samples/images/01.jpg",
+            "secure_url":"https://mxxxxkxxxx.github.io/ogpproxy/samples/images/01.jpg",
+            "type":"image/jpeg",
+            "width":400,
+            "height":300
+         }
+      ],
+      "video":[  
+         {  
+            "url":"http://mxxxxkxxxx.github.io/ogpproxy/samples/videos/01.mp4",
+            "secure_url":"https://mxxxxkxxxx.github.io/ogpproxy/samples/videos/01.mp4",
+            "type":"video/mp4",
+            "width":400,
+            "height":300
+         }
+      ],
+      "audio":[  
+         {  
+            "url":"http://mxxxxkxxxx.github.io/ogpproxy/samples/sounds/01.mp3",
+            "secure_url":"https://mxxxxkxxxx.github.io/ogpproxy/samples/sounds/01.mp3",
+            "type":"audio/mpeg"
+         }
+      ],
+      "description":[  
+         "This is a sample website for ogpproxy."
+      ],
+      "determiner":[  
+         "auto"
+      ],
+      "locale":[  
+         {  
+            "locale":"en_US",
+            "alternate":"ja_JP"
+         }
+      ],
+      "site_name":[  
+         "ogpproxy sample 01"
+      ]
+   }
+}
 ```
