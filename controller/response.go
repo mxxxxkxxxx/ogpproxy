@@ -11,7 +11,7 @@ import (
 type Response struct {
 	Writer http.ResponseWriter `json:"-"`
 	Errors []string            `json:"errors"`
-	Ogp    *ogp.OgpData        `json:"ogp"`
+	Ogp    *ogp.OgpDataCore    `json:"ogp"`
 }
 
 func (res *Response) Write() {

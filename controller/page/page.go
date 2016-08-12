@@ -33,8 +33,8 @@ func Get(w http.ResponseWriter, r *http.Request) {
 
 	if cache, err := ogp.LoadOgpData(url); err == nil {
 		console.Info("GET " + url + " from cache")
-		console.Debug(fmt.Sprintf("ogp(cached): %+v", cache))
-		res.Ogp = cache
+		console.Debug(fmt.Sprintf("ogp(cached): %+v", cache.Core))
+		res.Ogp = cache.Core
 	} else {
 		console.Debug("Failed to read from cache: err=[" + err.Error() + "]")
 		console.Info("GET " + url + " from remote")
@@ -47,12 +47,13 @@ func Get(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		res.Ogp = ogp.CreateOgpData(doc, url)
+		ogpData := ogp.CreateOgpData(doc, url)
+		res.Ogp  = ogpData.Core
 		console.Debug(fmt.Sprintf("ogp: %+v", res.Ogp))
 
 		go func() {
 			console.Debug("Trying to write cache... : url=[" + url + "]")
-			err = res.Ogp.Save()
+			err = ogpData.Save()
 			if err != nil {
 				console.Error("Failed to write cache: url=[" + url + "], err=[" + err.Error() + "]")
 			}

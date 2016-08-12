@@ -23,14 +23,14 @@ func GetHandler() Handler {
 	var handler Handler
 
 	config := config.GetConfig()
-	switch (strings.ToUpper(config.Cache)) {
+	switch (strings.ToUpper(config.Cache.Strategy)) {
 	case "LEVELDB":
 		handler = GetLevelDBHandler()
 	// @TODO:
 	// case "MEMCACHED":
 	// 	handler = GetMemcachedHandler()
 	default:
-		panic("invalid storage handling strategy: " + config.Cache)
+		panic("invalid storage handling strategy: " + config.Cache.Strategy)
 	}
 
 	return handler
