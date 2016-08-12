@@ -25,7 +25,7 @@ ENV=production ./ogpp
 # Usage
 
 ```
-http://[YOUR HOST]/?url=[WEBSITE]/
+http://[YOUR HOST]/?url=[WEBSITE]
 ```
 
 ```
