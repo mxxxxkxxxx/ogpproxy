@@ -54,27 +54,36 @@ func CreateOgpData(root *html.Node, url string) *OgpData {
 	ogp := &OgpData{}
 
 	var f func(n *html.Node)
+	var title, desc string
 	f = func(n *html.Node) {
 		if n.Type == html.ElementNode {
 			if n.Data == "meta" {
-				var prop, cont string
+				var prop, cont, name string
 				for _, attr := range n.Attr {
 					switch attr.Key {
 					case "property":
 						prop = attr.Val
 					case "content":
 						cont = attr.Val
+					case "name":
+						name = attr.Val
 					}
 				}
 
-				if len(prop) == 0 || len(cont) == 0 {
+				if len(cont) == 0 {
+					return
+				} else if len(prop) == 0 {
+					if len(name) > 0 && name == "description" {
+						desc = cont
+					}
+
 					return
 				}
 
 				ogp.Set(prop, cont)
 			} else if n.Data == "title" {
 				if len(ogp.Title) == 0 {
-					ogp.Title = append(ogp.Title, n.FirstChild.Data)
+					title = n.FirstChild.Data
 				}
 			}
 
@@ -86,6 +95,15 @@ func CreateOgpData(root *html.Node, url string) *OgpData {
 	}
 
 	f(root)
+
+	if (len(ogp.Title) == 0 && len(title) > 0) {
+		ogp.Title = append(ogp.Title, title)
+	}
+
+	if (len(ogp.Description) == 0 && len(desc) > 0) {
+		ogp.Description = append(ogp.Description, desc)
+	}
+
 	if (len(ogp.Url) == 0) {
 		ogp.Url = append(ogp.Url, url)
 	}
@@ -272,9 +290,5 @@ func (o *OgpData) Set(prop string, content string) {
 		o.Locale[l - 1].Alternate = content
 	case "og:site_name":
 		o.SiteName = append(o.SiteName, content)
-	case "description":
-		if len(o.Description) == 0 {
-			o.Description = append(o.Description, content)
-		}
 	}
 }
