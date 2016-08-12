@@ -55,6 +55,29 @@ func (h *LevelDBHandler) Read(key string) ([]byte, error) {
 	return buf, nil
 }
 
+func (h *LevelDBHandler) Remove(key string) error {
+	var err error
+
+	if len(key) == 0 {
+		return errors.New("Key is empty")
+	}
+
+	db, err := leveldb.OpenFile(h.Path, nil)
+	if err != nil {
+		return errors.Wrap(err, "Failed to open leveldb")
+	}
+	defer db.Close()
+
+	err = db.Delete([]byte(key), nil)
+	if err != nil {
+		return errors.Wrap(err, "Failed to delete data from leveldb")
+	}
+
+	console.Debug("Succeeded to delete data from leveldb: key=[" + key + "]")
+
+	return nil
+}
+
 func GetLevelDBHandler() *LevelDBHandler {
 	handler := &LevelDBHandler{Path: config.GetConfig().LevelDB.Path}
 

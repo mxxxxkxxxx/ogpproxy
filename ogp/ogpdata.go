@@ -6,21 +6,21 @@ import (
 	"github.com/pkg/errors"
 	"github.com/mxxxxkxxxx/ogpproxy/storage/cache"
 	"strconv"
+	"github.com/mxxxxkxxxx/ogpproxy/console"
 )
 
 type OgpData struct {
-	Title           []string       `json:"title"`
-	Type            []string       `json:"type"`
-	Url             []string       `json:"url"`
-	Image           []OgpImageData `json:"image"`
-	Video           []OgpVideoData `json:"video"`
-	Audio           []OgpAudioData `json:"audio"`
-	Description     []string       `json:"description"`
-	Determiner      []string       `json:"determiner"`
-	Locale          []string       `json:"locale"`
-	LocaleAlternate []string       `json:"locale_alternate"`
-	SiteName        []string       `json:"site_name"`
-	RequestedUrl    string         `json:"-"`
+	Title           []string        `json:"title"`
+	Type            []string        `json:"type"`
+	Url             []string        `json:"url"`
+	Image           []OgpImageData  `json:"image"`
+	Video           []OgpVideoData  `json:"video"`
+	Audio           []OgpAudioData  `json:"audio"`
+	Description     []string        `json:"description"`
+	Determiner      []string        `json:"determiner"`
+	Locale          []OgpLocaleData `json:"locale"`
+	SiteName        []string        `json:"site_name"`
+	RequestedUrl    string          `json:"-"`
 }
 
 type OgpImageData struct {
@@ -43,6 +43,11 @@ type OgpAudioData struct {
 	Url       string `json:"url"`
 	SecureUrl string `json:"secure_url"`
 	Type      string `json:"type"`
+}
+
+type OgpLocaleData struct {
+	Locale    string `json:"locale"`
+	Alternate string `json:"alternate"`
 }
 
 func CreateOgpData(root *html.Node, url string) *OgpData {
@@ -160,6 +165,9 @@ func (o *OgpData) Set(prop string, content string) {
 			l += 1
 		}
 		if num, err := strconv.Atoi(content); err != nil {
+			console.Error("Failed to execute strconv.Atoi(): property=" + prop +
+				", content=" + content + ", error=" + err.Error())
+		} else {
 			o.Image[l - 1].Width = num
 		}
 	case "og:image:height":
@@ -169,6 +177,9 @@ func (o *OgpData) Set(prop string, content string) {
 			l += 1
 		}
 		if num, err := strconv.Atoi(content); err != nil {
+			console.Error("Failed to execute strconv.Atoi(): property=" + prop +
+				", content=" + content + ", error=" + err.Error())
+		} else {
 			o.Image[l - 1].Height = num
 		}
 	case "og:video":
@@ -201,6 +212,9 @@ func (o *OgpData) Set(prop string, content string) {
 			l += 1
 		}
 		if num, err := strconv.Atoi(content); err != nil {
+			console.Error("Failed to execute strconv.Atoi(): property=" + prop +
+				", content=" + content + ", error=" + err.Error())
+		} else {
 			o.Video[l - 1].Width = num
 		}
 	case "og:video:height":
@@ -210,6 +224,9 @@ func (o *OgpData) Set(prop string, content string) {
 			l += 1
 		}
 		if num, err := strconv.Atoi(content); err != nil {
+			console.Error("Failed to execute strconv.Atoi(): property=" + prop +
+				", content=" + content + ", error=" + err.Error())
+		} else {
 			o.Video[l - 1].Height = num
 		}
 	case "og:audio":
@@ -240,9 +257,19 @@ func (o *OgpData) Set(prop string, content string) {
 	case "og:determiner":
 		o.Determiner = append(o.Determiner, content)
 	case "og:locale":
-		o.Locale = append(o.Locale, content)
+		l := len(o.Locale)
+		if l > 0 && len(o.Locale[l - 1].Locale) == 0 {
+			o.Locale[l - 1].Locale = content
+		} else {
+			o.Locale = append(o.Locale, OgpLocaleData{Locale: content})
+		}
 	case "og:locale:alternate":
-		o.LocaleAlternate = append(o.LocaleAlternate, content)
+		l := len(o.Locale)
+		if l == 0 {
+			o.Locale = append(o.Locale, OgpLocaleData{})
+			l += 1
+		}
+		o.Locale[l - 1].Alternate = content
 	case "og:site_name":
 		o.SiteName = append(o.SiteName, content)
 	case "description":

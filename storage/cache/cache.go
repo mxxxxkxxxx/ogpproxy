@@ -7,6 +7,7 @@ import (
 
 type Writer interface {
 	Write(key string, data []byte) error
+	Remove(key string) error
 }
 
 type Reader interface {
