@@ -4,7 +4,7 @@
   "debug"   : true,
   "cache"   : {
     "strategy"   : "leveldb",
-    "expiration" : 60
+    "expiration" : 3600
   },
   "leveldb" : {
     "path" : "cache.db"
